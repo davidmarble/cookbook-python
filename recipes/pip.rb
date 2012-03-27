@@ -32,9 +32,43 @@ end
 
 bash "install-pip" do
   cwd Chef::Config[:file_cache_path]
+  # Problems with non-interactive logins
+  # http://tickets.opscode.com/browse/CHEF-2288
+  # Nothing else seemed able to trigger .bashrc properly.
+  # See also https://github.com/wijet/chef-sudo/blob/master/lib/chef-sudo.rb
   code <<-EOF
-  #{python_bindir}python distribute_setup.py
-  #{python_bindir}easy_install pip
+  su -l -c '#{python_bindir}python #{Chef::Config[:file_cache_path]}/distribute_setup.py' root
+  su -l -c '#{python_bindir}easy_install pip' root
   EOF
   not_if { ::File.exists?(python_bindir+'pip') }
+end
+
+if node[:python].attribute?("pip_download_cache")
+    directory node[:python][:pip_download_cache] do
+        owner "root"
+        group "root"
+        mode "2777"
+        recursive true
+    end
+end
+
+if node[:python].attribute?("pip_packages")
+    node[:python][:pip_packages].each do |pip_pkg|
+        if pip_pkg.match(/Pillow/) or pip_pkg.match(/PIL/)
+            pkgs = value_for_platform(
+              ["debian","ubuntu"] => {
+                "default" => ["libjpeg", "libjpeg-dev", "libfreetype6", "libfreetype6-dev", "zlib1g-dev"]
+              },
+              ["centos","redhat","fedora"] => {
+                "default" => ["libjpeg", "libjpeg-devel", "freetype-devel", "zlib-devel"]
+              }
+            )        
+            pkgs.each do |pkg|
+                package pkg
+            end
+        end
+        execute "pip install #{pip_pkg}" do
+            cwd Chef::Config[:file_cache_path]
+        end
+    end
 end

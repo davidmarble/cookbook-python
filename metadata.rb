@@ -5,12 +5,14 @@ description       "Installs Python, pip and virtualenv. Includes LWRPs for manag
 version           "1.0.6"
 
 depends           "build-essential"
+depends           "utils"
 
 recipe "python", "Installs python, pip, and virtualenv"
 recipe "python::package", "Installs python using packages."
 recipe "python::source", "Installs python from source."
 recipe "python::pip", "Installs pip from source."
 recipe "python::virtualenv", "Installs virtualenv using the python_pip resource."
+recipe "python::virtualenvwrapper", "Installs virtualenvwrapper."
 
 %w{ debian ubuntu centos redhat fedora freebsd }.each do |os|
   supports os

@@ -16,6 +16,7 @@ Cookbooks
 ---------
 
 * build-essential
+* utils (https://github.com/davidmarble/cookbook-utils)
 
 Attributes
 ==========
@@ -122,7 +123,22 @@ Usage
 default
 -------
 
-Include default recipe in a run list, to get `python`, `pip` and `virtualenv`. Installs python by package or source depending on the platform.
+The default recipe installs `python`, `pip`, and `virtualenv`. It also installs 
+`virtualenvwrapper` if the configuration option `WORKON_HOME` is set (see 
+the `virtualenvwrapper` recipe below). 
+
+The default recipe checks if the target already has python installed and if it 
+meets a minimum version (default is 2.7.1). If the minimum version is not met 
+by the default python or ['python']['prefix_dir']/bin/python (default is 
+/usr/local/bin/python), the recipe will install by `install_method`, which 
+defaults to "package" (the python::package recipe).
+
+You can override the default options in your configuration. For example:
+
+    "python": {
+        "min_version": "2.7.1",
+        "install_method": "source"
+    }
 
 package
 -------
@@ -132,17 +148,43 @@ Installs Python from packages.
 source
 ------
 
-Installs Python from source.
+Installs Python from source. 
 
 pip
 ---
 
-Installs `pip` from source.
+Installs `pip` from source. 
+
+You can set the pip download cache directory and specific system-wide packages 
+to install via pip in your configuration options. The proper platform 
+requirements are installed if pip_packages includes "PIL" or "Pillow".
+
+    "python": {
+        "pip_download_cache": "/tmp/pip",
+        "pip_packages": ["Pillow==1.7.5"]
+    }
 
 virtualenv
 ----------
 
 Installs virtualenv using the `python_pip` resource.
+
+virtualenvwrapper
+-----------------
+
+Installs virtualenvwrapper globally using pip. If you include `WORKON_HOME` 
+in your python configuration, virtualenvwrapper will automatically be 
+included. You must define `WORKON_HOME_owner` and `WORKON_HOME_group`. 
+Optionally, you can make `WORKON_HOME` group-writeable so that 
+virtualenvs can be shared among users.
+
+    "python": {
+        "WORKON_HOME": "/var/www/envs",
+        "WORKON_HOME_owner": "www-data",
+        "WORKON_HOME_group": "www-pub",
+        "WORKON_HOME_group_writeable": true,
+    }
+
 
 License and Author
 ==================
@@ -150,6 +192,14 @@ License and Author
 Author:: Seth Chisamore (<schisamo@opscode.com>)
 
 Copyright:: 2011, Opscode, Inc
+
+Edits:: David Marble (<davidmarble@gmail.com>)
+
+* 2012:
+    * min_version check in default recipe
+    * pip_download_cache and pip_packages, including specialty treatment for 
+      Pillow and PIL
+    * virtualenvwrapper, including support for shared WORKON_HOME
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
