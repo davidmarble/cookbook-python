@@ -127,11 +127,11 @@ The default recipe installs `python`, `pip`, and `virtualenv`. It also installs
 `virtualenvwrapper` if the configuration option `WORKON_HOME` is set (see 
 the `virtualenvwrapper` recipe below). 
 
-The default recipe checks if the target already has python installed and if it 
-meets a minimum version (default is 2.7.1). If the minimum version is not met 
-by the default python or ['python']['prefix_dir']/bin/python (default is 
-/usr/local/bin/python), the recipe will install by `install_method`, which 
-defaults to "package" (the python::package recipe).
+The default recipe checks installs the platform version of python and checks if 
+it meets a minimum version (default is 2.7.1). If the minimum version is not 
+met by the default python or /usr/local/bin/python, the recipe will install by 
+source. You can skip the platform python install by specifying `install_method` 
+as "source" (the default is "package").
 
 You can override the default options in your configuration. For example:
 
@@ -140,6 +140,10 @@ You can override the default options in your configuration. For example:
         "install_method": "source"
     }
 
+This example would skip the platform package installation, test to see 
+if python version 2.7.1 or greater is installed already, and if not install 
+it from source.
+    
 package
 -------
 
@@ -161,7 +165,7 @@ requirements are installed if pip_packages includes "PIL" or "Pillow".
 
     "python": {
         "pip_download_cache": "/tmp/pip",
-        "pip_packages": ["Pillow==1.7.5"]
+        "pip_packages": ["Pillow==1.7.6"]
     }
 
 virtualenv

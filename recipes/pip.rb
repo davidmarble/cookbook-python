@@ -57,7 +57,7 @@ if node[:python].attribute?("pip_packages")
         if pip_pkg.match(/Pillow/) or pip_pkg.match(/PIL/)
             pkgs = value_for_platform(
               ["debian","ubuntu"] => {
-                "default" => ["libjpeg", "libjpeg-dev", "libfreetype6", "libfreetype6-dev", "zlib1g-dev"]
+                "default" => ["libjpeg62", "libjpeg-dev", "libfreetype6", "libfreetype6-dev", "zlib1g-dev"]
               },
               ["centos","redhat","fedora"] => {
                 "default" => ["libjpeg", "libjpeg-devel", "freetype-devel", "zlib-devel"]
@@ -67,7 +67,7 @@ if node[:python].attribute?("pip_packages")
                 package pkg
             end
         end
-        execute "pip install #{pip_pkg}" do
+        execute "#{python_bindir}pip install #{pip_pkg}" do
             cwd Chef::Config[:file_cache_path]
         end
     end
