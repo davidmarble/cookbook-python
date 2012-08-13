@@ -1,7 +1,9 @@
 include_recipe "utils::disable_hg_cert_checking"
 
 # Ensure WORKON_HOME_owner exists
-utils_ensure_user node[:python][:WORKON_HOME_owner]
+utils_ensure_user node[:python][:WORKON_HOME_owner] do
+    update_if_exists false
+end
 
 # Ensure WORKON_HOME_group exists
 utils_ensure_group node[:python][:WORKON_HOME_group] do
@@ -40,7 +42,7 @@ script "Initialize virtualenvwrapper" do
     user "root"
     cwd Chef::Config[:file_cache_path]
     code <<-EOH
-su -l -c 'echo' #{node[:python][:WORKON_HOME_owner]}
+su -p -l -c 'echo' root
     EOH
 end
 

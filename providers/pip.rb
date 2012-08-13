@@ -124,9 +124,10 @@ def current_installed_version
       delimeter = /\s/
       version_check_cmd = "pip --version"
     end
+    
     p = shell_out!(version_check_cmd)
     p.stdout.split(delimeter)[1].strip
-  rescue Chef::Exceptions::ShellCommandFailed
+  rescue #Chef::Exceptions::ShellCommandFailed
   end
 end
 

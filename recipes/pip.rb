@@ -37,8 +37,8 @@ bash "install-pip" do
   # Nothing else seemed able to trigger .bashrc properly.
   # See also https://github.com/wijet/chef-sudo/blob/master/lib/chef-sudo.rb
   code <<-EOF
-  su -l -c '#{python_bindir}python #{Chef::Config[:file_cache_path]}/distribute_setup.py' root
-  su -l -c '#{python_bindir}easy_install pip' root
+  su -p -l -c '#{python_bindir}python #{Chef::Config[:file_cache_path]}/distribute_setup.py' root
+  su -p -l -c '#{python_bindir}easy_install pip' root
   EOF
   not_if { ::File.exists?(python_bindir+'pip') }
 end
